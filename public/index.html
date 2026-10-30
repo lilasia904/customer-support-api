@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Customer Support Tracker</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="script.js" defer></script>
+    </head>
+
+    <body>
+
+        <header>
+            <h1>Customer Support Tracker</h1>
+            <p>Manage and organize support requests.</p>
+        </header>
+
+        <main>
+
+            <section class="ticket-form">
+                <h2>Create New Ticket</h2>
+
+                <form id="ticketForm">
+                <div class="form-group">
+                <label for="customerName">
+                Customer Name
+                </label>
+
+                <input
+                type="text"
+                id="customerName"
+                placeholder="Enter customer name"
+                required>
+                </div>
+
+                <div class="form-group">
+                    <label for="ticketTitle">
+                        Customer Issue
+                    </label>
+
+                    <input
+                        type="text"
+                        id="ticketTitle"
+                        placeholder="Enter customer issue"
+                        required
+                        >
+                        </div>
+
+                        <button type="submit">
+                            Add Ticket
+                        </button>
+                </form>
+            </section>
+
+            <section class="ticket-list">
+                <h2>Support Tickets</h2>
+
+                    <div class="ticket-filter filter group">
+                    <label for="statusFilter">Filter by Status:</label>
+
+                    <select id="statusFilter">
+                        <option value="All">All Tickets</option>
+                        <option value="Open">Open</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Resolved">Resolved</option>
+                    </select>
+                    </div>
+                    
+
+                    <div class="ticket-search filter group">
+                    <label for="ticketSearch">Search Tickets:</label>
+
+                        <input
+                            type="search"
+                            id="ticketSearch"
+                            placeholder="Search tickets by title..."
+                            >
+                        </div>
+
+
+                            <p id="noResults" hidden>
+                            No matching tickets found.
+                            </p>
+
+
+            </section>
+
+            
+            <section class="ticket-stats">
+                <h2>Ticket Overview</h2>
+
+                    <p>
+                        Total Tickets:
+                    <span id="totalTickets">0</span>
+                    </p>
+
+                    <p>
+                        Open Tickets:
+                    <span id="openTickets">0</span>
+                </p>
+
+                <p>
+                    In Progress:
+            <span id="inProgressTickets">0</span>
+                </p>
+
+
+                    <p>
+                        Resolved Tickets:
+                    <span id="resolvedTickets">0</span>
+
+                    </p>
+
+            </section>
+
+        </main>
+    </body>
+</html>
