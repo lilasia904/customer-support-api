@@ -80,3 +80,21 @@ The SQLite database is created automatically when the application starts.
 This project is currently intended for local development and demonstration.
 
 Authentication, authorization, additional security protections, and production deployment are future improvements.
+
+
+
+## Deployment Status
+
+This full-stack application has been developed and
+tested locally using Node.js, Express, and SQLite.
+
+Deployment is pending hosting setup.
+
+Features include:
+- Administrator authentication
+- Persistent SQLite ticket storage
+- Create, read, update, and delete tickets
+- CSRF protection and API rate limiting
+- Input validation and error handling
+- Persistent administrator sessions
+- Server health-check endpoint
