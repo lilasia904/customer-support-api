@@ -22,6 +22,11 @@ const bcrypt = require("bcryptjs");
 
 const app = express();
 
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
+
 
 const isDevelopment = app.get("env") === "development";
 
@@ -418,6 +423,11 @@ app.get("/api/tickets", function(req, res) {
 
 
 
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok"
+  });
+});
 
 
 app.use((err, req, res, next) => {
