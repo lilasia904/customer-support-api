@@ -108,24 +108,31 @@ ticketForm.addEventListener("submit", async function(event) {
   }
 
   try {
+
+    const csrfToken = await getCsrfToken();
+
     const response = await fetch("/api/tickets", {
       method: "POST",
+      
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "X-CSRF-Token": csrfToken
       },
+
       body: JSON.stringify({
         customer: customer,
         issue: issue
       })
     });
 
-    if (!response.ok) {
-      throw new Error("Could not create ticket");
-    }
-
-    const newTicket = await response.json();
-
     
+const newTicket = await response.json();
+
+if (!response.ok) {
+  throw new Error(
+    newTicket.message || "Unable to save ticket."
+  );
+}
     createTicketCard(
       newTicket.issue,
       newTicket.status,
@@ -138,10 +145,13 @@ ticketForm.addEventListener("submit", async function(event) {
     ticketTitle.value = "";
     ticketTitle.focus();
 
-  } catch (error) {
-    console.error("Create Ticket Error:", error);
-    alert("Unable to save ticket.");
-  }
+  
+} catch (error) {
+  console.error("Create Ticket Error:", error);
+
+  alert(error.message || "Unable to save ticket.");
+}
+
 });
 
 
@@ -172,10 +182,13 @@ ticketList.addEventListener("change", async function(event) {
   dropdown.disabled = true;
 
   try {
+
+    const csrfToken = await getCsrfToken();
+
     const response = await fetch(`/api/tickets/${ticketId}`, {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json", "X-CSRF-Token": csrfToken
       },
       body: JSON.stringify({
         status: apiStatus
@@ -231,8 +244,15 @@ ticketList.addEventListener("click", async function(event) {
   deleteButton.disabled = true;
 
   try {
+
+    const csrfToken = await getCsrfToken();
+
     const response = await fetch(`/api/tickets/${ticketId}`, {
-      method: "DELETE"
+      method: "DELETE",
+      headers: {
+        "X-CSRF-Token": csrfToken
+      },
+      credentials: "same-origin"
     });
 
     if (!response.ok) {
@@ -324,7 +344,14 @@ if (matchesStatus && matchesSearch) {
 
   });
 
+
 const noResults = document.getElementById("noResults");
+
+if (tickets.length === 0) {
+  noResults.textContent = "No tickets yet. Create your first support ticket.";
+} else {
+  noResults.textContent = "No matching tickets found.";
+}
 
 noResults.hidden = visibleCount > 0;
 
@@ -377,3 +404,51 @@ createTicketCard(
 }
 
 testDatabaseConnection();
+
+
+
+const logoutButton = document.getElementById("logoutButton");
+
+logoutButton.addEventListener("click", async function() {
+  logoutButton.disabled = true;
+
+  try {
+    
+    const csrfToken = await getCsrfToken();
+
+    const response = await fetch("/api/logout", {
+      method: "POST",
+      headers: {
+        "X-CSRF-Token": csrfToken
+      },
+      credentials: "same-origin"
+    });
+
+    if (!response.ok) {
+      throw new Error("Logout failed.");
+    }
+
+    window.location.href = "/tracker/login.html";
+
+  } catch (error) {
+    alert("Unable to log out. Please try again.");
+    logoutButton.disabled = false;
+  }
+});
+
+
+
+async function getCsrfToken() {
+  const response = await fetch("/api/csrf-token", {
+    credentials: "same-origin",
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to get CSRF token.");
+  }
+
+  const data = await response.json();
+
+  return data.csrfToken;
+}

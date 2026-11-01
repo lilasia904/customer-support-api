@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Admin Login | Customer Support Tracker</title>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="login.js" defer></script>
+</head>
+
+<body>
+  <main>
+    <h1>Customer Support Tracker</h1>
+    <h2>Administrator Login</h2>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Username</label>
+
+        <input
+          type="text"
+          id="username"
+          name="username"
+          autocomplete="username"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+
+        <input
+          type="password"
+          id="password"
+          name="password"
+          autocomplete="current-password"
+          required
+        >
+      </div>
+
+      <button type="submit" id="loginButton">
+        Sign In
+      </button>
+
+      <p id="loginMessage" role="status"
+         aria-live="polite"></p>
+    </form>
+  </main>
+</body>
+</html>

@@ -1,7 +1,18 @@
 
-const { Database } = require("node:sqlite");
 
-const db = new Database("tickets.db");
+const { Database } = require("node:sqlite");
+const path = require("node:path");
+const fs = require("node:fs");
+
+const dataDirectory = process.env.DATA_DIR || __dirname;
+
+fs.mkdirSync(dataDirectory, {
+  recursive: true
+});
+
+const db = new Database(
+  path.join(dataDirectory, "tickets.db")
+);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS tickets (
