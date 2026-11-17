@@ -8,11 +8,14 @@ const loginButton = document.getElementById("loginButton");
 loginForm.addEventListener("submit", async function(event) {
   event.preventDefault();
 
+  if (loginButton.disabled) return;
+
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
   loginMessage.textContent = "";
   loginButton.disabled = true;
+  loginButton.textContent = "Signing In...";
 
   try {
 
@@ -54,8 +57,9 @@ loginForm.addEventListener("submit", async function(event) {
 
   } catch (error) {
     loginMessage.textContent =
-      "Unable to connect to the server.";
+      "Something went wrong. Please try again.";
   } finally {
-    loginButton.disabled = false;
-  }
+  loginButton.disabled = false;
+  loginButton.textContent = "Sign In";
+}
 });

@@ -54,28 +54,28 @@
                         >
                         </div>
 
-                        <button type="submit">
+                        <button type="submit" id="addTicketButton">
                             Add Ticket
-                        </button>
-                </form>
-            </section>
+                             </button>
+                        </form>
+                    </section>
 
-            <section class="ticket-list">
-                <h2>Support Tickets</h2>
+                    <section class="ticket-list">
+                        <h2>Support Tickets</h2>
 
-                    <div class="ticket-filter filter group">
+                    <div class="ticket-filter filter-group">
                     <label for="statusFilter">Filter by Status:</label>
 
                     <select id="statusFilter">
                         <option value="All">All Tickets</option>
                         <option value="Open">Open</option>
-                        <option value="In Progress">In Progress</option>
+                        <option value="Pending">In Progress</option>
                         <option value="Resolved">Resolved</option>
                     </select>
                     </div>
                     
 
-                    <div class="ticket-search filter group">
+                    <div class="ticket-search filter-group">
                     <label for="ticketSearch">Search Tickets:</label>
 
                         <input
@@ -85,42 +85,38 @@
                             >
                         </div>
 
-
                             <p id="noResults" hidden>
                             No matching tickets found.
                             </p>
 
+                        </section>
 
-            </section>
-
-            
-            <section class="ticket-stats">
-                <h2>Ticket Overview</h2>
+                    <section class="ticket-stats">
+                    <h2>Ticket Overview</h2>
 
                     <p>
                         Total Tickets:
-                    <span id="totalTickets">0</span>
+                        <span id="totalTickets">0</span>
                     </p>
 
                     <p>
                         Open Tickets:
-                    <span id="openTickets">0</span>
-                </p>
+                        <span id="openTickets">0</span>
+                    </p>
 
-                <p>
-                    In Progress:
-            <span id="inProgressTickets">0</span>
-                </p>
-
+                    <p>
+                        In Progress:
+                        <span id="inProgressTickets">0</span>
+                    </p>
 
                     <p>
                         Resolved Tickets:
-                    <span id="resolvedTickets">0</span>
-
+                        <span id="resolvedTickets">0</span>
                     </p>
+                </section>
 
-            </section>
 
-        </main>
+
+    </main>
     </body>
-</html>
+    </html>

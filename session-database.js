@@ -1,8 +1,5 @@
 
-
-
-const sqlite = require("node:sqlite");
-const Database = sqlite.Database || sqlite.DatabaseSync;
+const { DatabaseSync } = require("node:sqlite");
 
 const path = require("node:path");
 const fs = require("node:fs");
@@ -13,7 +10,7 @@ fs.mkdirSync(dataDirectory, {
   recursive: true
 });
 
-const sessionDb = new Database(
+const sessionDb = new DatabaseSync(
   path.join(dataDirectory, "sessions.db")
 );
 
@@ -24,6 +21,9 @@ sessionDb.exec(`
     data TEXT NOT NULL,
     expires_at INTEGER NOT NULL
   );
+
+  CREATE INDEX IF NOT EXISTS idx_sessions_expires_at
+  ON sessions (expires_at);
 `);
 
 

@@ -1,5 +1,6 @@
 const ticketForm = document.getElementById("ticketForm");
 const ticketTitle = document.getElementById("ticketTitle");
+const addTicketButton = document.getElementById("addTicketButton");
 const ticketList = document.querySelector(".ticket-list");
 const statusFilter = document.getElementById("statusFilter");
 const ticketSearch = document.getElementById("ticketSearch");
@@ -100,14 +101,21 @@ if (ticketId !== null) {
 ticketForm.addEventListener("submit", async function(event) {
   event.preventDefault();
 
+  // Prevent duplicate submissions
+  if (addTicketButton.disabled) return;
+
   const customer = document.getElementById("customerName").value.trim();
   const issue = ticketTitle.value.trim();
 
   if (customer === "" || issue === "") {
-    return;
-  }
+  return;
+}
 
-  try {
+// Disable button while saving
+addTicketButton.disabled = true;
+addTicketButton.textContent = "Adding Ticket...";
+
+try {
 
     const csrfToken = await getCsrfToken();
 
@@ -150,6 +158,10 @@ if (!response.ok) {
   console.error("Create Ticket Error:", error);
 
   alert(error.message || "Unable to save ticket.");
+
+} finally {
+  addTicketButton.disabled = false;
+  addTicketButton.textContent = "Add Ticket";
 }
 
 });
@@ -329,8 +341,14 @@ function filterTickets() {
 
     const ticketTitle = ticket.querySelector("h3").textContent.toLowerCase();
 
+    const normalizedStatus =
+  selectedStatus === "Pending"
+    ? "In Progress"
+    : selectedStatus;
+
     const matchesStatus =
-      selectedStatus === "All" || ticketStatus === selectedStatus;
+  normalizedStatus === "All" ||
+  ticketStatus === normalizedStatus;
 
     const matchesSearch = ticketTitle.includes(searchText);
 
@@ -360,14 +378,54 @@ noResults.hidden = visibleCount > 0;
 
 
 
-statusFilter.addEventListener("change", function() {
-  filterTickets();
+// SAVE STATUS FILTER
 
+statusFilter.addEventListener("change", function() {
+  sessionStorage.setItem(
+    "ticketStatusFilter",
+    statusFilter.value
+  );
+
+  filterTickets();
 });
+
+
+// SAVE SEARCH TEXT
 
 ticketSearch.addEventListener("input", function() {
+  sessionStorage.setItem(
+    "ticketSearchText",
+    ticketSearch.value
+  );
+
   filterTickets();
 });
+
+// RESTORE SAVED FILTER AND SEARCH
+
+const savedStatusFilter =
+  sessionStorage.getItem("ticketStatusFilter");
+
+const savedSearchText =
+  sessionStorage.getItem("ticketSearchText");
+
+// Restore the status filter
+if (
+  savedStatusFilter &&
+  Array.from(statusFilter.options).some(
+    option => option.value === savedStatusFilter
+  )
+) {
+  statusFilter.value = savedStatusFilter;
+}
+
+// Restore the search text
+if (savedSearchText !== null) {
+  ticketSearch.value = savedSearchText;
+}
+
+// Apply the restored filters
+filterTickets();
 
 
 updateTicketStats();
@@ -383,8 +441,6 @@ async function testDatabaseConnection() {
 
     const databaseTickets = await response.json();
 
-    console.log("Tickets from SQLite:", databaseTickets);
-
 
 databaseTickets.forEach(function(ticket) {
   
@@ -399,8 +455,16 @@ createTicketCard(
 });
 
   } catch (error) {
-    console.error("API connection error:", error);
-  }
+  console.error("API connection error:", error);
+
+  const noResults = document.getElementById("noResults");
+
+  noResults.textContent =
+    "Unable to load tickets. Please refresh the page.";
+
+  noResults.hidden = false;
+}
+
 }
 
 testDatabaseConnection();

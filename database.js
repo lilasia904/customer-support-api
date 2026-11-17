@@ -1,8 +1,4 @@
-
-
-
-const sqlite = require("node:sqlite");
-const Database = sqlite.Database || sqlite.DatabaseSync;
+const { DatabaseSync } = require("node:sqlite");
 
 const path = require("node:path");
 const fs = require("node:fs");
@@ -13,7 +9,7 @@ fs.mkdirSync(dataDirectory, {
   recursive: true
 });
 
-const db = new Database(
+const db = new DatabaseSync(
   path.join(dataDirectory, "tickets.db")
 );
 

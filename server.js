@@ -181,15 +181,17 @@ app.post("/api/login", loginLimiter, async (req, res, next) => {
   const { username, password } = req.body || {};
 
   if (
-    typeof username !== "string" ||
-    typeof password !== "string" ||
-    !username ||
-    !password
-  ) {
-    return res.status(400).json({
-      message: "Username and password are required."
-    });
-  }
+  typeof username !== "string" ||
+  typeof password !== "string" ||
+  username.length === 0 ||
+  password.length === 0 ||
+  username.length > 100 ||
+  Buffer.byteLength(password, "utf8") > 72
+) {
+  return res.status(400).json({
+    message: "Invalid username or password format."
+  });
+}
 
   try {
     const passwordMatches = await bcrypt.compare(
@@ -210,6 +212,8 @@ app.post("/api/login", loginLimiter, async (req, res, next) => {
       if (error) return next(error);
 
       req.session.isAdmin = true;
+
+      req.session.csrfToken = randomBytes(32).toString("hex");
 
       req.session.save((error) => {
         if (error) return next(error);
@@ -387,10 +391,6 @@ app.delete("/api/tickets/:id", function(req, res) {
   });
 });
 
-
-
-
-
 app.get("/api/tickets", function(req, res) {
   const tickets = db.prepare("SELECT * FROM tickets").all();
 
@@ -399,36 +399,11 @@ app.get("/api/tickets", function(req, res) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "ok"
   });
 });
-
 
 app.use((err, req, res, next) => {
 
