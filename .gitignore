@@ -1,7 +1,22 @@
 
+# Dependencies
 node_modules/
-tickets.db
-tickets.db-*
+
+# Environment variables
 .env
-sessions.db
-sessions.db-*
+.env.*
+!.env.example
+
+# SQLite databases and backups
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+
+# Logs
+*.log
+
+# macOS files
+.DS_Store

@@ -40,28 +40,82 @@ Users can create, view, update, and delete customer support tickets through a re
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | /api/tickets | Retrieve all tickets |
-| GET | /api/tickets/:id | Retrieve one ticket |
 | POST | /api/tickets | Create a ticket |
 | PUT | /api/tickets/:id | Update ticket status |
 | DELETE | /api/tickets/:id | Delete a ticket |
 
 ## Installation
 
-1. Clone this repository.
-2. Open the project folder.
-3. Install dependencies:
+### Prerequisites
 
-    npm install
+Before running this project, make sure you have:
 
-4. Start the server:
+- Node.js 24 or newer (up to version 26)
+- npm
+- Git
 
-    node server.js
+### 1. Clone the Repository
 
-5. Open the application in your browser:
+```bash
+git clone YOUR_REPOSITORY_URL
+```
 
-    http://localhost:3000/tracker/
+Navigate into the project directory:
 
-The SQLite database is created automatically when the application starts.
+```bash
+cd customer-support-api
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure Environment Variables
+
+Create a `.env` file in the project root using
+`.env.example` as a template.
+
+For local development, configure:
+
+- `NODE_ENV=development`
+- `PORT=3000`
+- `APP_ORIGIN=http://localhost:3000`
+- `DATA_DIR=.`
+- `ADMIN_USERNAME` — Your administrator username
+- `SESSION_SECRET` — A strong, randomly generated secret
+- `ADMIN_PASSWORD_HASH` — A bcrypt hash of your administrator password
+
+Never commit your actual `.env` file or credentials to GitHub.
+
+### 4. Start the Server
+
+```bash
+npm start
+```
+
+The application automatically initializes its SQLite
+database tables when the server starts.
+
+### 5. Open the Application
+
+Visit:
+
+http://localhost:3000/tracker/login.html
+
+Sign in using the administrator credentials configured
+in your environment variables.
+
+### Database Storage
+
+The application uses SQLite to store customer support
+tickets and administrator sessions.
+
+Database files are excluded from Git.
+
+Local data persists between application restarts.
+Production hosting requires persistent database storage.
 
 ## What I Learned
 
@@ -77,10 +131,22 @@ The SQLite database is created automatically when the application starts.
 
 ## Project Status
 
-This project is currently intended for local development and demonstration.
+This application is functional and has been tested locally.
 
-Authentication, authorization, additional security protections, and production deployment are future improvements.
+Implemented features include:
 
+- Administrator authentication
+- Session-based authorization
+- CSRF protection
+- API rate limiting
+- Secure password verification using bcrypt
+- Server-side input validation
+- SQLite database storage
+- Full CRUD functionality
+- Search and status filtering
+- Ticket statistics
+
+Production deployment is planned for a future update.
 
 
 ## Deployment Status

@@ -16,7 +16,15 @@ const helmet = require("helmet");
 
 const session = require("express-session");
 
-const sessionStore = require("./session-store");
+const pool = require("./postgres");
+
+const PgSession = require("connect-pg-simple")(session);
+
+const sessionStore = new PgSession({
+  pool: pool,
+  createTableIfMissing: true,
+  pruneSessionInterval: 900
+});
 
 const bcrypt = require("bcryptjs");
 
@@ -38,10 +46,6 @@ app.use(helmet({
   },
   strictTransportSecurity: isDevelopment ? false : undefined
 }));
-
-
-
-const db = require("./database");
 
 app.use(express.json({
   limit: "10kb"
@@ -283,10 +287,13 @@ app.get("/", function(req, res) {
 });
 
 
-app.post("/api/tickets", function(req, res) {
+// CREATE A NEW TICKET IN POSTGRESQL
+
+app.post("/api/tickets", async function(req, res, next) {
   const customer = req.body?.customer;
   const issue = req.body?.issue;
 
+  // Validate required fields
   if (
     typeof customer !== "string" ||
     !customer.trim() ||
@@ -294,107 +301,142 @@ app.post("/api/tickets", function(req, res) {
     !issue.trim()
   ) {
     return res.status(400).json({
-      message: "Customer and issue are required"
+      message: "Customer and issue are required."
     });
   }
 
+  // Validate character limits
+  if (
+    customer.trim().length > 80 ||
+    issue.trim().length > 500
+  ) {
+    return res.status(400).json({
+      message:
+        "Customer name must be 80 characters or fewer, and issue must be 500 characters or fewer."
+    });
+  }
 
-if (customer.trim().length > 80 || issue.trim().length > 500) {
-  return res.status(400).json({
-    message: "Customer name must be 80 characters or fewer, and issue must be 500 characters or fewer."
-  });
-}
+  try {
+    const result = await pool.query(
+      `INSERT INTO tickets (customer, issue, status)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [
+        customer.trim(),
+        issue.trim(),
+        "Open"
+      ]
+    );
 
+    res.status(201).json(result.rows[0]);
 
-
-  const statement = db.prepare(
-    "INSERT INTO tickets (customer, issue, status) VALUES (?, ?, ?)"
-  );
-
-  const result = statement.run(
-    customer.trim(),
-    issue.trim(),
-    "Open"
-  );
-
-  const newTicket = db.prepare(
-    "SELECT * FROM tickets WHERE id = ?"
-  ).get(Number(result.lastInsertRowid));
-
-  res.status(201).json(newTicket);
+  } catch (error) {
+    next(error);
+  }
 });
 
 
+// UPDATE TICKET STATUS IN POSTGRESQL
 
-app.put("/api/tickets/:id", function(req, res) {
+app.put("/api/tickets/:id", async function(req, res, next) {
   const ticketId = Number(req.params.id);
   const newStatus = req.body?.status;
 
-  if (!Number.isSafeInteger(ticketId) || ticketId < 1) {
+  // Validate ticket ID
+  if (
+    !Number.isSafeInteger(ticketId) ||
+    ticketId < 1
+  ) {
     return res.status(400).json({
-      message: "Invalid ticket ID"
+      message: "Invalid ticket ID."
     });
   }
 
-  if (!["Open", "Pending", "Resolved"].includes(newStatus)) {
+  // Validate ticket status
+  if (
+    !["Open", "Pending", "Resolved"].includes(newStatus)
+  ) {
     return res.status(400).json({
-      message: "Invalid ticket status"
+      message: "Invalid ticket status."
     });
   }
 
-  const result = db.prepare(
-    "UPDATE tickets SET status = ? WHERE id = ?"
-  ).run(newStatus, ticketId);
+  try {
+    const result = await pool.query(
+      `UPDATE tickets
+       SET status = $1
+       WHERE id = $2
+       RETURNING *`,
+      [newStatus, ticketId]
+    );
 
-  if (result.changes === 0) {
-    return res.status(404).json({
-      message: "Ticket not found"
-    });
+    // Check whether the ticket exists
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Ticket not found."
+      });
+    }
+
+    res.json(result.rows[0]);
+
+  } catch (error) {
+    next(error);
   }
-
-  const updatedTicket = db.prepare(
-    "SELECT * FROM tickets WHERE id = ?"
-  ).get(ticketId);
-
-  res.json(updatedTicket);
 });
 
+// DELETE A TICKET FROM POSTGRESQL
 
-
-
-app.delete("/api/tickets/:id", function(req, res) {
+app.delete("/api/tickets/:id", async function(req, res, next) {
   const ticketId = Number(req.params.id);
 
-  if (!Number.isSafeInteger(ticketId) || ticketId < 1) {
+  // Validate ticket ID
+  if (
+    !Number.isSafeInteger(ticketId) ||
+    ticketId < 1
+  ) {
     return res.status(400).json({
-      message: "Invalid ticket ID"
+      message: "Invalid ticket ID."
     });
   }
 
-  const ticket = db.prepare(
-    "SELECT * FROM tickets WHERE id = ?"
-  ).get(ticketId);
+  try {
+    const result = await pool.query(
+      `DELETE FROM tickets
+       WHERE id = $1
+       RETURNING *`,
+      [ticketId]
+    );
 
-  if (!ticket) {
-    return res.status(404).json({
-      message: "Ticket not found"
+    // Check whether the ticket existed
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Ticket not found."
+      });
+    }
+
+    res.json({
+      message: "Ticket deleted successfully",
+      ticket: result.rows[0]
     });
+
+  } catch (error) {
+    next(error);
   }
-
-  db.prepare(
-    "DELETE FROM tickets WHERE id = ?"
-  ).run(ticketId);
-
-  res.json({
-    message: "Ticket deleted successfully",
-    ticket: ticket
-  });
 });
 
-app.get("/api/tickets", function(req, res) {
-  const tickets = db.prepare("SELECT * FROM tickets").all();
+// GET ALL TICKETS FROM POSTGRESQL
 
-  res.json(tickets);
+app.get("/api/tickets", async function(req, res, next) {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM tickets ORDER BY id ASC"
+    );
+
+    res.json(result.rows);
+
+  } catch (error) {
+    next(error);
+  }
 });
 
 
