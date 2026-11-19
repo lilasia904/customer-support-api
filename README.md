@@ -1,3 +1,19 @@
+## Live Demo
+
+Explore the Customer Support Ticket Tracker without creating an account.
+
+🚀 **[Try the Interactive Demo](https://customer-support-api-1ij1.onrender.com/tracker/demo.html)**
+
+The demo includes sample support tickets and allows visitors to:
+
+- Create and delete tickets
+- Update ticket statuses
+- Search and filter tickets
+- View dashboard statistics
+- Reset sample data
+
+Demo information is stored locally in the visitor's browser using
+localStorage and does not affect the administrator's PostgreSQL database.
 
 # Customer Support Ticket Tracker — Full-Stack Application
 
