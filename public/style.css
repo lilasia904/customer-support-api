@@ -165,3 +165,73 @@ button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* PUBLIC DEMO ACCESS */
+
+.demo-access {
+  margin-top: 30px;
+  padding-top: 25px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.demo-access p {
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.demo-button {
+  display: inline-block;
+  width: 100%;
+  padding: 14px 20px;
+  margin: 12px 0;
+  background-color: #2563eb;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.demo-button:hover {
+  background-color: #1d4ed8;
+}
+
+.demo-button:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 4px;
+}
+
+.demo-description {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* DEMO DASHBOARD BUTTONS */
+
+#resetDemoButton {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#resetDemoButton:hover {
+  background-color: #1d4ed8;
+}
+
+.back-to-login {
+  display: inline-block;
+  margin-right: 12px;
+  color: white;
+  text-decoration: underline;
+}
+
+.back-to-login:hover {
+  color: #bfdbfe;
+}

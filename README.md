@@ -149,18 +149,21 @@ Implemented features include:
 Production deployment is planned for a future update.
 
 
-## Deployment Status
+## Live Application
 
-This full-stack application has been developed and
-tested locally using Node.js, Express, and SQLite.
+The Customer Support Ticket Tracker is deployed on Render
+and uses Neon PostgreSQL for persistent database storage.
 
-Deployment is pending hosting setup.
+Live Application:
+https://customer-support-api-1ij1.onrender.com/tracker/
 
-Features include:
-- Administrator authentication
-- Persistent SQLite ticket storage
-- Create, read, update, and delete tickets
-- CSRF protection and API rate limiting
-- Input validation and error handling
-- Persistent administrator sessions
-- Server health-check endpoint
+### Deployment
+
+- Hosting: Render
+- Database: Neon PostgreSQL
+- Backend: Node.js and Express
+- Authentication: Administrator login with persistent sessions
+- Security: CSRF protection, rate limiting, and input validation
+
+Note: The application currently requires administrator credentials.
+A public demonstration account is planned for a future update.
